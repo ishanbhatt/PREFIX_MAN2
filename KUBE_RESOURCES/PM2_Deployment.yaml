@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: backend-prod # Name of the deployment.
+    namespace: prefix
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: backend  # all pods with celeb-matcher are part of this deployment, This must match with the pods name.
+                                # Here we are labeling all the pods with celeb-matcher, failing to specify it will create issue
+    template: # Describes the pods that will be used for the deployment.
+        metadata:
+            labels: # Same labels are set for all pods.
+                app: backend
+                version: prod
+        spec:
+            containers: # List of containers running in each pod.
+                - name: backend
+                  image: ishanbhatt/prefix-part2:test  # repo/image:tag
+                  imagePullPolicy: IfNotPresent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: backend-canary # Name of the deployment.
+    namespace: prefix
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: backend  # all pods with celeb-matcher are part of this deployment, This must match with the pods name.
+                                # Here we are labeling all the pods with celeb-matcher, failing to specify it will create issue
+    template: # Describes the pods that will be used for the deployment.
+        metadata:
+            labels: # Same labels are set for all pods.
+                app: backend
+                version: canary
+        spec:
+            containers: # List of containers running in each pod.
+                - name: backend
+                  image: ishanbhatt/prefix-part2:fixed  # repo/image:tag
+                  imagePullPolicy: IfNotPresent
