@@ -9,3 +9,36 @@ kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP          2d21h
 5) Get the node-ip using minikube ip
 6) curl -X GET 'http://<MINIKUBE_IP>:31181/prefix?class=e'
 
+================================SET UP VOLUME==========================================
+1) Go to the minikube node using minikube ssh
+2) Create a directory sudo mkdir /mnt/data
+3) Create a persistent volume.
+    Here you are creating the actual volume and specifying it's size, name, hostPath: "/mnt/data"
+    See in PV-Volume.yaml -> storageClassName: pv-demo (It is most useful)
+    kubectl apply -f PV-Volume.yaml
+    kubectl get pv
+    NAME                   CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+    my-persistent-volume   100Mi      RWO            Retain           Available           pv-demo                 52s
+
+4) Create Persistent volume claim
+    Specify the storaceClassName same as the one you had created above.
+    Here, you are requesting to claim 100Mi from the storageClass
+    If it were available it will be granted to you.
+    kubectl apply -f PV-Volume-Claim.yaml
+    kubectl get pvc
+    NAME                        STATUS   VOLUME                 CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+    my-persistent-volumeclaim   Bound    my-persistent-volume   100Mi      RWO            pv-demo        110s
+
+    At this stage if you check PV , you will see that it's STATUS will be Bound.
+    kubectl get pv
+    NAME                   CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                               STORAGECLASS   REASON   AGE
+    my-persistent-volume   1Gi        RWO            Retain           Bound    default/my-persistent-volumeclaim   pv-demo                 82m
+
+5) Update your deployment with the volume-claim details
+    Add volumes to spec (sibling of container)
+        - Specify volume's name and claim's name.
+    Refer to above volume's name with volumeMounts in container section
+    Specify the path where you want to mount this thing and make sure your code is updated to use this DB location
+
+
+
