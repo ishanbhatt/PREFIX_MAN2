@@ -1,0 +1,11 @@
+If you are running this against minikube
+1) kubectl apply -f PM2_Deployment.yaml -> It will create 2 deployments canary and prod
+2) Make sure you add type: NodePort in the PM2_Service.yaml
+3) kubectl apply -f PM2_Service.yaml
+4) kubectl get svc
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+backend      NodePort    10.111.251.199   <none>        6757:31181/TCP   3m8s
+kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP          2d21h
+5) Get the node-ip using minikube ip
+6) curl -X GET 'http://<MINIKUBE_IP>:31181/prefix?class=e'
+

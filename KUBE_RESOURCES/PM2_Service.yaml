@@ -9,6 +9,7 @@ metadata:
 spec:
   selector:
     app: backend
+  type: NodePort
   ports:
     - port: 6757
       targetPort: 6757

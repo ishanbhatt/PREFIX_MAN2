@@ -22,6 +22,16 @@ spec:
                 - name: backend
                   image: ishanbhatt/prefix-part2:test  # repo/image:tag
                   imagePullPolicy: IfNotPresent
+                  env:
+                    - name: DB_LOCATION
+                      value: "/db_location"
+                  volumeMounts:
+                    - mountPath: "/db-location"
+                      name: my-persistent-volumeclaim-name
+            volumes:
+              - name: my-persistent-volumeclaim-name
+                persistentVolumeClaim:
+                  claimName: my-persistent-volumeclaim
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,3 +56,13 @@ spec:
                 - name: backend
                   image: ishanbhatt/prefix-part2:fixed  # repo/image:tag
                   imagePullPolicy: IfNotPresent
+                  env:
+                    - name: DB_LOCATION
+                      value: "/db_location"
+                  volumeMounts:
+                    - mountPath: "/db-location"
+                      name: my-persistent-volumeclaim-name
+            volumes:
+              - name: my-persistent-volumeclaim-name
+                persistentVolumeClaim:
+                  claimName: my-persistent-volumeclaim
