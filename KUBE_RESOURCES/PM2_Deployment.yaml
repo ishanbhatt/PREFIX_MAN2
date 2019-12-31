@@ -54,7 +54,7 @@ spec:
         spec:
             containers: # List of containers running in each pod.
                 - name: backend
-                  image: ishanbhatt/prefix-part2:test  # repo/image:tag
+                  image: ishanbhatt/prefix-part2:retry  # repo/image:tag
                   imagePullPolicy: IfNotPresent
                   env:
                     - name: DB_LOCATION

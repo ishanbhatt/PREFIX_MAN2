@@ -28,5 +28,6 @@ spec:
         host: backend
         subset: v2
     retries:
-      attempts: 3
-      perTryTimeout: 2s
+      attempts: 10
+      perTryTimeout: 5s
+      retryOn: "5xx"
