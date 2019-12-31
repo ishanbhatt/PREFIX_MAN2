@@ -1,5 +1,4 @@
 import json
-import random
 from datetime import datetime
 
 from flask import request, jsonify, make_response
@@ -12,10 +11,6 @@ from Prefix2_App.models import PrefixClassDefaults, Prefix
 @app.route("/prefix", methods=["GET"])
 def get_prefix():
     prefix_class = request.args.get("class")
-
-    random_int = random.randint(1,50)
-    if random_int % 2 == 0:
-        raise InternalServerError("Want to fail it intentionally")
 
     if prefix_class and len(prefix_class) == 1:
         next_available_prefix = Prefix.query.filter_by(prefix=prefix_class.upper()).one()
