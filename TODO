@@ -40,5 +40,26 @@ kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP          2d21h
     Refer to above volume's name with volumeMounts in container section
     Specify the path where you want to mount this thing and make sure your code is updated to use this DB location
 
+==============================SET UP LOAD GENERATOR====================================
+1) Inject the client with the Istio sidecar proxy so network interactions are governed by Istio:
+    kubectl apply -f <(istioctl kube-inject -f samples/httpbin/sample-client/fortio-deploy.yaml)
+2) Login to that pod and generate load
+    FORTIO_POD=$(kubectl get pod | grep fortio | awk '{ print $1 }')
+        kubectl exec -it $FORTIO_POD  -c fortio /usr/bin/fortio -- load -curl  http://backend:6757/prefix?class=e"
+        kubectl exec -it $FORTIO_POD  -c fortio /usr/bin/fortio -- load -c 2 -qps 0 -n 20 -loglevel Warning http://backend:6757/prefix?class=e
 
+    YOU WILL BE GETTING FOLLOWING OP IF YOU LOAD IT
+    Sockets used: 13 (for perfect keepalive, would be 3)
+    Code 200 : 19 (63.3 %)
+    Code 503 : 11 (36.7 %)  # The circuit has tripped and it returned 503
+    A 503 Service Unavailable Error is an HTTP response status code indicating that a server is temporarily unable to handle the request. This may be due to the server being overloaded or down for maintenance
 
+    If you do not load it, 1 concurrent connection and 10 request
+    Sockets used: 1 (for perfect keepalive, would be 1)
+    Code 200 : 10 (100.0 %)
+
+    Server Logs
+    127.0.0.1 - - [02/Jan/2020 10:45:11] "GET /prefix?class=e HTTP/1.1" 200 -
+    127.0.0.1 - - [02/Jan/2020 10:45:11] "GET /prefix?class=e HTTP/1.1" 200 -
+
+    This means that server always gave 200 code, the 503 is coming by istio-envoy itself
